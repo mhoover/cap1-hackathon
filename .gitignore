@@ -1,3 +1,9 @@
 # environment files/directories
 *.pyc
 .cache/
+
+# configuration files
+*.cfg
+
+# data files
+*.csv
