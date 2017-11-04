@@ -1,0 +1,3 @@
+# environment files/directories
+*.pyc
+.cache/
