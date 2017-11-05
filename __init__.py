@@ -207,7 +207,7 @@ class Cap1Account(object):
         elif composite_diff>=limit:
             return 'Good job! Click here for more positive credit tips: https://www.capitalone.com/financial-education/credit-and-loans/credit/using-credit-wisely/'
         else:
-            return 'Not bad, your {} is right on track.'
+            return 'Not bad, your {} is right on track.'.format(type)
 
     @staticmethod
     def recover_xy_pos(months, dist, type):

@@ -28,19 +28,21 @@ def process_request(resp_url, content, url):
                          data=json.dumps(payload))
 
 
-@app.route('/isabelle', methods=['POST', 'GET'])
-def isabelle():
+@app.route('/finknow', methods=['POST', 'GET'])
+def finknow():
     resp_url = request.form.get('response_url')
+    text = request.form.get('text')
+    text = str(text).split(' ')
 
     # get information
     args_dict = {
-        'user': 316720000,
-        'graph': 'spend',
-        'limit': 100,
+        'user': int(text[0]),
+        'graph': text[1],
+        'limit': int(text[2]),
     }
     content = run.run(args_dict)
 
-    # post information
+    # # post information
     slack = SlackClient(os.getenv('SLACK_HFF_OAUTH'))
     files = {
         'file': (
