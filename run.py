@@ -50,7 +50,7 @@ def run(args_dict):
                                          args_dict['graph'], args_dict['limit'])
 
     # return decision
-    print decision
+    return decision
 
 
 if __name__ == '__main__':
