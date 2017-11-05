@@ -1,10 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import argparse
+import ConfigParser
 import pandas as pd
 import sys
 
 from cap1Hackathon import *
+
+
+def update_args(args_dict):
+    cfg = ConfigParser.ConfigParser()
+    cfg.read('config.cfg')
+    for k, v in cfg.items('run'):
+        args_dict[k] = int(v)
+
+    return args_dict
 
 
 def run(args_dict):
@@ -36,9 +46,11 @@ def run(args_dict):
 
     # make plots
     month = datetime.now().month
-    helper.make_density_plots(df_agg, agg_values, month, 'spend')
-    helper.make_density_plots(df_agg, agg_values, month, 'reward')
+    decision = helper.make_density_plots(df_agg, agg_values, month,
+                                         args_dict['graph'], args_dict['limit'])
 
+    # return decision
+    print decision
 
 
 if __name__ == '__main__':
@@ -46,6 +58,9 @@ if __name__ == '__main__':
                                      'distributions.')
     parser.add_argument('-u', '--user', required=True, type=int, help='The '
                         'customer ID to compare against distributions.')
+    parser.add_argument('-g', '--graph', required=True, choices=['spend',
+                        'reward'], help='Data to plot as distribution.')
     args_dict = vars(parser.parse_args())
+    args_dict = update_args(args_dict)
 
     run(args_dict)

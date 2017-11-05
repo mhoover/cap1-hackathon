@@ -184,13 +184,9 @@ class Cap1Account(object):
     def get_values(data, field):
         return [x[field] for x in data]
 
-    def make_density_plots(self, dist, usr, month, type=['spend', 'reward']):
+    def make_density_plots(self, dist, usr, month, type, limit):
         months = self.month_dict[month]
-        max_ys = [(sbn.kdeplot(dist[type][dist.month==x])
-                  .get_lines()[0]
-                  .get_data()[1]
-                  .max()) for x in months]
-        plt.close()
+        max_xs = self.recover_xy_pos(months, dist, type)
 
         f, ax = plt.subplots(1, len(months), figsize=(20, 4))
         sbn.despine(left=True)
@@ -202,3 +198,26 @@ class Cap1Account(object):
                    .format(type.title(), x)) for i, x in enumerate(months)]
         plt.savefig('{}_plt.png'.format(type))
         plt.close()
+
+        composite_diff = sum([max_x-float(usr[type][usr.month==x]) for max_x, month in
+                             zip(max_xs, months)])
+
+        if composite_diff<=-limit:
+            return 'Uh-oh, your spending is a little high. Click here for suggestions: https://www.capitalone.com/credit-cards/blog/limited-credit-cards/'
+        elif composite_diff>=limit:
+            return 'Good job! Click here for more positive credit tips: https://www.capitalone.com/financial-education/credit-and-loans/credit/using-credit-wisely/'
+        else:
+            return 'Not bad, your {} is right on track.'
+
+    @staticmethod
+    def recover_xy_pos(months, dist, type):
+        xy_arrays = []
+        for x in months:
+            xy_arrays.append(
+                sbn.kdeplot(dist[type][dist.month==x]).get_lines()[0].get_data()
+            )
+            plt.close()
+        pos_ys = [y[1].tolist().index(max(y[1])) for y in xy_arrays]
+        max_xs = [xy[0][pos_y] for xy, pos_y in zip(xy_arrays, pos_ys)]
+
+        return max_xs
